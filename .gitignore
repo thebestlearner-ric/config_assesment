@@ -3,3 +3,4 @@ myhosts
 *.tfstate
 *.tfstate.backup
 terraform*
+.terraform
