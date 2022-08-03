@@ -2,5 +2,5 @@ Demokey.pem
 myhosts
 *.tfstate
 *.tfstate.backup
-terraform*
 .terraform
+.terraform.lock.hcl
