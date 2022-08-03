@@ -55,24 +55,20 @@ resource "aws_instance" "web" {
     private_key = file(local.private_key_path)
     timeout = "4m"
   }
-
-  provisioner "local-exec" {
-    command = "echo ${self.public_ip} > myhosts"
-  }
-  
-	provisioner "local-exec" {
-    command = "echo The server ip address ${self.private_ip}"
-  }
-	provisioner "local-exec" {
-    command = "echo The server ip public address ${self.public_ip}"
-  }
-  # provisioner "local-exec" {
-  #   command = "ansible-playbook -i myhosts --user ${local.ssh_user} --private-key ${local.private_key_path} varloop.yml"
-  # }    
 	provisioner "remote-exec" {
     inline = [
       "echo 'Wait for SSH connection...'"
     ]
+  }
+  provisioner "local-exec" {
+    command = "echo ${self.public_ip} > myhosts"
+  }
+  
+  # provisioner "local-exec" {
+  #   command = "ansible-playbook -i myhosts --user ${local.ssh_user} --private-key ${local.private_key_path} varloop.yml"
+  # }    
+  provisioner "local-exec" {
+    command = "ansible-playbook -i myhosts --user ${local.ssh_user} --private-key ${local.private_key_path} ansible-wordpress/install-wordpress.yml -v"
   }
 }
 
