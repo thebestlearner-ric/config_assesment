@@ -1,15 +1,17 @@
 locals {
   ami_id = "ami-09e67e426f25ce0d7"
-  vpc_id = "vpc-0c4b68f5524373824"
+  vpc_id = "vpc-07553a83676d7957d"
   ssh_user = "ubuntu"
   key_name = "Demokey"
   private_key_path = "/home/geric/Desktop/learning/config_management/assessment/Demokey.pem"
 }
 
+
+
 provider "aws" {
-  access_key = "ASIAVDKB23UVIYET7JPH"
-  secret_key = "RVJKDVl06YPzistdAVRvSTo0hM3Lg32i0+w3J6bz"
-  token = "FwoGZXIvYXdzED8aDIs4GqTOl/Cg8VJckyK3AQ/cFZj0ZR4kUWn1YU20vsxPZmOv+uIVDCS90qgVrkVmf0a5En+WOXOVedBvcio+czAmyZoiYbZiCaz7HAYJKieFEMZYOva28+vphaUavBVxoFLrjubBBq+ZYio6rDKdTXokOUVjsMJ+a11dbZ748pE5paiNE4rshe/T2qBoR5jDkfSlZLZr7uv5PJTiyKfhYVLRpfI43rZyIosoxrW+3h9FLC6xRrTX8kjIsjBymWbMUocUS0EtUCjvlqiXBjIt5DSpa+y1XeM94xMCoRsl8KjDR9kpaBwYOrAQ/fq/mYvNiE9LC/jQQK2Xe2Jl"
+  access_key = "ASIAVDKB23UVKNNGUTDN"
+  secret_key = "4Jt2s3RBngsBScTj1cfJMVrF5gvCkqAk3YniOgkU"
+  token = "FwoGZXIvYXdzEFMaDDZxnczNF2uD8ai+fyK3AcNAIyJcL4ICV+TvBXWXnyXELlqOl7QHSUsHg/9N3ohl7CtEQ6aVNxSPebIsukNfNR05dpp0qHjBrYz0bw63wvwUg6cpToyQqSfYBiFpUaa0NnItgeXCkc5BJKFyt/JyJn7ILBB6nSFQS16bbmBXiTCT9UQ9z1YYth6QAtvgaDZtLH7SnkJERMY8Ncx91HQHjgHR3h4w4tJifxmq5+pQpRMF6o/coQh6VA3Jbv5WGmBSmrit0Ljo2ii+z6yXBjItr2LZ+49QHbZWIQsVx6/xSOEhysY9ndcsaowU8GAm9z2XMXcY3papNr0Wffnf"
   region = "us-east-1"
 }
 
@@ -61,17 +63,20 @@ resource "aws_instance" "web" {
     ]
   }
   provisioner "local-exec" {
-    command = "echo ${self.public_ip} > myhosts"
+    command = "echo '[wordpress]' > ansible-wordpress/production && echo ${self.public_ip} >> ansible-wordpress/production"
   }
-  
-  # provisioner "local-exec" {
-  #   command = "ansible-playbook -i myhosts --user ${local.ssh_user} --private-key ${local.private_key_path} varloop.yml"
-  # }    
   provisioner "local-exec" {
-    command = "ansible-playbook -i myhosts --user ${local.ssh_user} --private-key ${local.private_key_path} ansible-wordpress/install-wordpress.yml -v"
+  	command = "echo '[wordpress]' > myhosts && echo ${self.public_ip} >> myhosts"
+  }
+  provisioner "local-exec" {
+    command = "ansible-playbook -i myhosts --user ${local.ssh_user} --private-key ${local.private_key_path} varloop.yml -v"
+  }    
+  provisioner "local-exec" {
+    #command = "ansible-playbook -i myhosts --user ${local.ssh_user} --private-key ${local.private_key_path} ansible-wordpress/install-wordpress.yml -v"
+		command = "ansible-playbook -i myhosts --user ${local.ssh_user} --private-key ${local.private_key_path} wordpress-demo/playbook.yml -v"
   }
 }
 
 output "instance_ip" {
-  value = aws_instance.web.public_ip
+  value = aws_instance.web.public_dns
 }
