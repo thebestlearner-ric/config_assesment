@@ -1,9 +1,22 @@
 - hosts: all
   gather_facts: False
-  
+  become: true
   tasks:
+  - name: Backup /etc/apt/sources.list
+    become: true
+    shell: mv /etc/apt/sources.list /etc/apt/sources.list_store
+  - name: Add Pre-requiste to install python 2
+    shell: |
+      echo '
+      deb http://archive.ubuntu.com/ubuntu bionic main restricted universe multiverse
+      deb http://archive.ubuntu.com/ubuntu bionic-security main restricted universe multiverse
+      deb http://archive.ubuntu.com/ubuntu bionic-updates main restricted universe multiverse 
+      deb http://mirror.kakao.com/ubuntu focal-security main restricted
+      deb http://mirror.kakao.com/ubuntu focal-security universe
+      deb http://mirror.kakao.com/ubuntu focal-security multiverse
+      ' >> /etc/apt/sources.list 
   - name: install python 2
-    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    raw: test -e /usr/bin/python || (sudo apt-get -y update && sudo apt-get install -y python-minimal)
 
 - hosts: wordpress
 
